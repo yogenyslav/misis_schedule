@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 
 from app.data import schemas
 from app.utils.logging import log
-from app.utils.schedule import upload_shedules
+from app.utils.schedule import upload_schedules, upload_schedules_ibo
 from app.data import crud
 from app.dependencies import get_db, ScheduleFilters
 
@@ -31,7 +31,17 @@ async def upload_schedule(file: UploadFile):
     Загрузить расписание в формате Excel
     """
     log.debug(f"Uploading schedules: {file.filename}")
-    upload_shedules(file)
+    try:
+        if "ibo" not in file.filename:
+            upload_schedules(file)
+        else:
+            raise NotImplementedError
+            # upload_schedules_ibo(file)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Error while uploading schedules: {e}",
+        )
     log.debug("Schedules uploaded")
 
     return Response(status_code=status.HTTP_201_CREATED)
