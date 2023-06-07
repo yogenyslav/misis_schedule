@@ -7,3 +7,6 @@ iso3166
 pandas
 xlrd
 openpyxl
+beautifulsoup4
+httpx
+apscheduler

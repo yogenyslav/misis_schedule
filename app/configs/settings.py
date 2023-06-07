@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     DOCKER_MODE: bool
     LOGGING_LEVEL: str
 
+    SCHEDULE_URL: str = "https://misis.ru/students/schedule/"
+
     class Config:
         env_file = ".env"
         case_sensitive = True

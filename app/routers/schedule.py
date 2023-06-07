@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 
 from app.data import schemas
 from app.utils.logging import log
-from app.utils.schedule import upload_schedules, upload_schedules_ibo
+from app.utils.upload import upload_schedules  # , upload_schedules_ibo
 from app.data import crud
 from app.dependencies import get_db, ScheduleFilters
 
@@ -26,33 +26,28 @@ router = APIRouter(prefix="/schedule", tags=["schedule"])
     "/upload",
     status_code=status.HTTP_201_CREATED,
 )
-async def upload_schedule(file: UploadFile):
+async def upload_schedule():
     """
     Загрузить расписание в формате Excel
     """
-    log.debug(f"Uploading schedules: {file.filename}")
-    try:
-        if "ibo" not in file.filename:
-            upload_schedules(file)
-        else:
-            raise NotImplementedError
-            # upload_schedules_ibo(file)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Error while uploading schedules: {e}",
-        )
-    log.debug("Schedules uploaded")
+    # try:
+    #     upload_schedules()
+    # except Exception as e:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    #         detail=f"Error while uploading schedules: {e}",
+    #     )
 
+    upload_schedules()
     return Response(status_code=status.HTTP_201_CREATED)
 
 
 @router.get("/", response_model=list[schemas.LessonDto] | None)
 async def get_schedule(
-    filters: Annotated[ScheduleFilters, Depends()],
-    db: Annotated[Session, Depends(get_db)],
-    offset: Annotated[int, Query(ge=0)] = 0,
-    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    filters: ScheduleFilters = Depends(ScheduleFilters),
+    db: Session = Depends(get_db),
+    offset: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
 ) -> list[schemas.LessonDto] | None:
     """
     Получить расписание по фильтрам
