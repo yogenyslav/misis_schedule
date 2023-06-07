@@ -30,15 +30,14 @@ async def upload_schedule():
     """
     Загрузить расписание в формате Excel
     """
-    # try:
-    #     upload_schedules()
-    # except Exception as e:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-    #         detail=f"Error while uploading schedules: {e}",
-    #     )
+    try:
+        upload_schedules()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error while uploading schedules: {e}",
+        )
 
-    upload_schedules()
     return Response(status_code=status.HTTP_201_CREATED)
 
 
